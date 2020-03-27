@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Add our new application 
     'catalog.apps.CatalogConfig', #This object was created for us in /catalog/apps.py
+    'aws_xray_sdk.ext.django',
 ]
 
 MIDDLEWARE = [
@@ -53,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'aws_xray_sdk.ext.django.middleware.XRayMiddleware',
 ]
 
 ROOT_URLCONF = 'locallibrary.urls'
@@ -177,3 +179,15 @@ if PRIVATE_IP_REQUEST_DATA:
     IP_ADDRESS = PRIVATE_IP_REQUEST_DATA.text
 
     ALLOWED_HOSTS.append(IP_ADDRESS)
+
+XRAY_RECORDER = {
+    'AWS_XRAY_DAEMON_ADDRESS': '127.0.0.1:2000',
+    'AUTO_INSTRUMENT': True,  # If turned on built-in database queries and template rendering will be recorded as subsegments
+    'AWS_XRAY_CONTEXT_MISSING': 'LOG_ERROR',
+    'PLUGINS': (),
+    'SAMPLING': True,
+    'SAMPLING_RULES': None,
+    'AWS_XRAY_TRACING_NAME': 'locallibrary', # the segment name for segments generated from incoming requests
+    'DYNAMIC_NAMING': None, # defines a pattern that host names should match
+    'STREAMING_THRESHOLD': None, # defines when a segment starts to stream out its children subsegments
+}
