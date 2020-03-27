@@ -151,3 +151,14 @@ STATIC_URL = '/static/'
 # Static file serving.
 # http://whitenoise.evans.io/en/stable/django.html#django-middleware
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Get the private IP address of the instance to stop Sentry errors from
+# Load Balancer health checks.
+import requests
+
+PRIVATE_IP_URL = 'http://169.254.169.254/latest/meta-data/local-ipv4'
+PRIVATE_IP_REQUEST_DATA = requests.get(PRIVATE_IP_URL)
+if PRIVATE_IP_REQUEST_DATA:
+    IP_ADDRESS = PRIVATE_IP_REQUEST_DATA.text
+
+    ALLOWED_HOSTS.append(IP_ADDRESS)
