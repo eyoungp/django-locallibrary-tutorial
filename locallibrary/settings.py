@@ -75,6 +75,21 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'locallibrary.wsgi.application'
 
+# SSM
+import boto3
+## Create the SSM Client
+ssm = boto3.client(
+    'ssm',
+    region_name='ap-northeast-2'
+)
+
+## Get the requested parameter
+response = ssm.get_parameter(
+    Name='/LOCAL_LIBRARY/DB_PASSWORD',
+    WithDecryption=True
+)
+
+DB_PASSWORD = response['Parameter']['Value']
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
@@ -84,7 +99,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'local_library',
         'USER': 'local_library',
-        'PASSWORD': 'asdf1234',
+        'PASSWORD': DB_PASSWORD,
         'HOST': 'eb-postgres.c5i0baug8wct.ap-northeast-2.rds.amazonaws.com',
         'PORT': '5432',
     }
